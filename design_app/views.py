@@ -9,6 +9,9 @@ from django.contrib.auth.decorators import login_required
 from .models import UserDesign
 from django.middleware.csrf import get_token
 
+from django.contrib.sessions.models import Session
+from django.contrib.sessions.backends.db import SessionStore
+
 import json
 
 User = get_user_model()
@@ -43,6 +46,10 @@ def logout_view(request):
 @csrf_exempt
 @login_required
 def check_login_view(request):
+    print('request session', dict(request.session))
+    # print('request session decode', request.session.get_decoded())
+
+    
     if request.user.is_authenticated:
         # User is logged in
         # Do something for authenticated users
@@ -82,16 +89,43 @@ def get_data_test_view(request):
 
 @csrf_exempt
 # @login_required
+def get_design_view(request):
+    data_request = json.loads(request.body)
+    user_name = data_request['username']
+
+    # s = Session.objects.get(session_key="232053809283312")
+    user = User.objects.filter(username=user_name).first()  
+    print('user find: ',user)
+    data ={ 'message': 'hehe',}
+    if user is not None:
+
+        user_design = UserDesign.objects.filter(user=user).first()
+
+        data = {
+            'username': user.username,
+            'design':  json.loads(user_design.design),
+        }
+    else:
+        # User is not logged in
+        # Do something for anonymous users
+        data = {
+            'message': 'something went wrong when get the design',
+        }
+
+    return JsonResponse(data)
+@csrf_exempt
+# @login_required
 def save_design_view(request):
     data_request = json.loads(request.body)
-    print(request.user)
-    if request.user.is_authenticated:
+    user_name = data_request['username']
+    design = data_request['design']
 
-        user_name = data_request['username']
-        design = data_request['design']
+    # s = Session.objects.get(session_key="232053809283312")
+    user = User.objects.filter(username=user_name).first()
+    print('user find: ',user)
+    data ={ 'message': 'hehe',}
+    if user is not None:
 
-
-        user = User.objects.filter(username=user_name).first()
         user_design = UserDesign.objects.filter(user=user).first()
 
         user_design.design = design

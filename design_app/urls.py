@@ -6,6 +6,7 @@ from .views import check_login_view
 from .views import get_data_test_view
 from .views import save_design_view
 from .views import csrf_token_view
+from .views import get_design_view
 
 
 urlpatterns = [
@@ -15,5 +16,6 @@ urlpatterns = [
     path('api/check_login/', check_login_view, name='check_login'),
     path('api/get_data/', get_data_test_view, name='get_data'),
     path('api/save_design/', save_design_view, name='save_design'),
-    path('api/token/', csrf_token_view, name='token'),
+    path('api/token/', csrf_token_view, name='token'), 
+    path('api/get_design/', get_design_view, name='get_design'), 
 ]
